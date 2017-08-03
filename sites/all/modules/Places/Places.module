@@ -1,0 +1,280 @@
+
+<?php
+   function googlePlaces_menu()
+   {
+       $items = array();
+       $items['travel_options'] = array(
+     'title' => 'Search Attractions',
+     'page callback' => 'drupal_get_form',
+     'page arguments' => array('travel_form'),
+     'access callback' => true,
+     'type' => MENU_NORMAL_ITEM,
+     );
+       $items['travel_results'] = array(
+     'title' => 'Results',
+     'page callback' => 'travel_search',
+     'access callback' => true,
+     'type' => MENU_CALLBACK,
+     );
+       $items['save_results'] = array(
+     'title' => 'My Results',
+     'page callback' => 'save_view',
+     'access callback' => true,
+     'type' => MENU_CALLBACK,
+     );
+       return $items;
+   }
+
+   function travel_form()
+   {
+       $form['attraction1'] = array(
+       '#title' => 'What do you like to do for fun?',
+       '#type' => 'textfield',
+       '#description' => t('What do you like to do for fun?'),
+       '#required' => true,
+     );
+       $form['attraction2'] = array(
+       '#title' => 'What do you like to do for fun?',
+       '#type' => 'textfield',
+       '#description' => t('List another activity you enjoy'),
+       '#required' => true,
+     );
+       $form['attraction3'] = array(
+       '#title' => 'What do you like to do for fun?',
+       '#type' => 'textfield',
+       '#description' => t('List another activity you enjoy'),
+       '#required' => true,
+       );
+       $form['city'] = array(
+       '#title' => 'What city are you visting?',
+       '#type' => 'textfield',
+       '#required' => true,
+       '#description' => t('Please enter a city'),
+     );
+       $form['active'] = array(
+       '#title' => 'How active do you like to be on vacation?',
+       '#type' => 'select',
+       '#options' => array(
+           'relaxed' => 'I like a leisurely trip',
+           'active' => 'I like to see everything I can',
+           'middle' => 'I like a mix of realxing and seeing what I can'
+       ),
+       '#required' => true,
+       '#description' => t('How active do you like to be on vacation?'),
+     );
+       $form['days'] = array(
+       '#title' => 'How many days is your trip?',
+       '#type' => 'select',
+       '#options' => array(
+           1 => 1,
+           2 => 2,
+           3 => 3,
+           4 => 4,
+           5 => 5,
+       ),
+       '#required' => true,
+       '#description' => t('How many days is your trip?'),
+     );
+       $form['mode'] = array(
+       '#title' => 'How do you like to get around town?',
+       '#type' => 'select',
+       '#options' => array(
+           'Walking' => 'On foot',
+           'Driving' => 'By car',
+           'Transit' => 'Using public transport',
+           'All' => 'Any of these options',
+       ),
+       '#required' => true,
+       '#description' => t('How do you like to get around town?'),
+     );
+       $form['submit'] = array(
+       '#type' => 'submit',
+       '#value' => 'Search',
+     );
+
+       return $form;
+   }
+
+   function checkbox_form()
+   {
+       $form['save'] = array(
+       '#title' => '',
+       '#type' => 'checkboxes',
+       '#options' => array(
+         1=>'save',
+       ),
+       '#description' => t('Check to save'),
+     );
+       $form['submit'] = array(
+       '#type' => 'submit',
+       '#value' => 'Save',
+     );
+       return $form;
+   }
+
+   function checkbox_form_submit($form, &$form_state)
+   {
+       $_SESSION['id'] = $form_state['values']['save'];
+       $form_state['redirect'] = 'save_results';
+   }
+
+   function travel_form_submit($form, &$form_state)
+   {
+       $_SESSION['active'] = $form_state['values']['active'];
+       $_SESSION['attraction1'] = $form_state['values']['attraction1'];
+       $_SESSION['attraction2'] = $form_state['values']['attraction2'];
+       $_SESSION['attraction3'] = $form_state['values']['attraction3'];
+       $_SESSION['city'] = $form_state['values']['city'];
+       $_SESSION['days'] = $form_state['values']['days'];
+       $_SESSION['mode'] = $form_state['values']['mode'];
+       $form_state['redirect'] = 'travel_results';
+   }
+
+
+   function travel_search()
+   {
+       $active = $_SESSION['active'];
+       $activities = array();
+       $array_offset = 0;
+       $attractions = array();
+       //places key
+       $api_key = 'AIzaSyAOy8TYrUjMoRdW9-PIVi-50GnmGe_CDi8';
+       //   $days = $_SESSION['days'];
+       $days = $_SESSION['days'];
+       $counter = 0;
+       $destintation = '';
+       $distance_array = array();
+       //maps key
+       $lat1 = 0;
+       $lat2 = 0;
+       $maps_key = 'AIzaSyBU9Qh-CcMbmwS_OLHtjyLPXb4Da_xitMk';
+       $mode = $_SESSION['mode'];
+       $number_of_activities = 0;
+       $origin = '';
+       $output = '';
+       $rating = '';
+       $results_array = [];
+       $result_string = '';
+
+       //convert days to array
+       $days_array = array();
+       for ($i=1; $i <= $days ; $i++) {
+           array_push($days_array, $i);
+       }
+       $days = $days_array;
+       // form validation
+       for ($i=1 ; $i < 4 ; $i++) {
+           if (str_word_count($_SESSION['attraction'.$i]) > 1) {
+               $_SESSION['attraction'.$i] = preg_replace('/\s+/', '', $_SESSION['attraction'.$i]);
+               array_push($attractions, $_SESSION['attraction'.$i]);
+           } else {
+               array_push($attractions, $_SESSION['attraction'.$i]);
+           }
+       }
+       $city = $_SESSION['city'];
+       if (str_word_count($city) > 1) {
+           $city = preg_replace('/\s+/', '', $city);
+       } else {
+           $city = $city;
+       }
+       //determine number of daily activities
+       if ($active === "active") {
+           $number_of_activities = 3;
+       } elseif ($active === "middle") {
+           $number_of_activities = 2;
+       } else {
+           $number_of_activities = 1;
+       }
+       $api_return_array = [];
+
+       //google places api call
+       $googleApiPlaceUri = 'https://maps.googleapis.com/maps/api/place/textsearch/json';
+       foreach ($attractions as $attraction) {
+           $api_call = preg_replace('/\s+/', '', "{$googleApiPlaceUri}?query={$attraction}+in+{$city}&key={$api_key}");
+           $api_return_array[] = json_decode(file_get_contents($api_call));
+           foreach ($api_return_array as $result) {
+               $results = $result->results;
+               array_push($results_array, $results);
+           }
+       }
+       for ($h=3; $h <= 6 ; $h++) {
+           for ($i=0; $i < count($results_array[$h]); $i++) {
+               $lng = $results_array[$h][$i]->geometry->location->lng;
+               $lat = $results_array[$h][$i]->geometry->location->lat;
+               $R = 6371; // Radius of the earth in km
+               $dLat = deg2rad($results_array[$h][$i + 1]->geometry->location->lat - $results_array[$h][$i]->geometry->location->lat); // deg2rad below
+               $dLon = deg2rad($results_array[$h][$i + 1]->geometry->location->lng - $results_array[$h][$i]->geometry->location->lng);
+               $a =
+                 sin($dLat / 2) * sin($dLat / 2) +
+                 cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+                 sin($dLon / 2) * sin($dLon / 2);
+               $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+               $d = $R * $c; // Distance in km
+               $distance = round($d * .62, 2);
+               if ($mode === "Walking" && $distance < 5) {
+                   array_push($activities, $i);
+                   array_push($distance_array, $distance);
+               } elseif ($mode === "Transit" && $distance < 15) {
+                   array_push($activities, $i);
+                   array_push($distance_array, $distance);
+               } elseif ($mode === "Driving" && $distance < 30) {
+                   array_push($activities, $i);
+                   array_push($distance_array, $distance);
+               } elseif ($mode === "All") {
+                   array_push($activities, $i);
+                   array_push($distance_array, $distance);
+               }
+           }
+       }
+       foreach ($days as $day) {
+           $output = $output.<<<EOD
+           <div class=well>
+           <h1>Itinerary for day $day</h1>
+EOD;
+           $activity_slice = array_slice($activities, $array_offset, 1);
+           $array_offset = $array_offset +3;
+           if (empty($activity_slice)) {
+               $output .= "<h4>Sorry no activities found, please try adding interests, or trying different modes of transportation</h4></div>";
+           } else {
+               foreach ($activity_slice as $activity) {
+                   for ($i=3; $i < 6 ; $i++) {
+                       $more_info =$results_array[$i][$activity]->photos[0]->html_attributions[0];
+                       $address = $results_array[$i][$activity]->formatted_address;
+                       $name = $results_array[$i][$activity]->name;
+                       $open_now = $results_array[$i][$activity]->opening_hours->open_now;
+                       //check if attraction is currently open
+                       if ($open_now === true) {
+                           $open_now = "Open";
+                       } else {
+                           $open_now = "Closed, Please check website for hours";
+                       }
+                       $place_id = $results_array[$i][$activity]->place_id;
+                       // $_SESSION['output'.$activity] = $name . $address . $rating;
+                       if (empty($results_array[$i][$activity]->rating)) {
+                           $rating = "Sorry no rating";
+                       } else {
+                           $rating = (string)$results_array[$i][$activity]->rating;
+                       }
+                       $distance = $distance_array[$counter];
+                       $counter++;
+                       if ($name === null) {
+                           $output = $output.<<<EOD
+                           <h4>Sorry, no results found for this search, please try entering another activity.</h4>
+EOD;
+                       } else {
+                           $output = $output.<<<EOD
+                           <h2>$name</h2>
+                           <h4>Address: $address </h4>
+                           <h4>Rating: $rating </h4>
+                           <h4>Open now: $open_now</h4>
+                           <h4>More info: $more_info</h4>
+                           <h4>$mode distance to next stop : $distance  miles</h4>
+EOD;
+                       }
+                   }
+               }
+               $output.= '</div>';
+           }
+       }
+       return $output;
+   }
