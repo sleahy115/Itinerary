@@ -1,6 +1,7 @@
 # Grab A Bag
 
-![ScreenShot](Screenshot1.png)
+![ScreenShot](/Screenshot1.png)
+![alt text](/Screenshot2.png)
 
 ## Created by Sarah Leahy
 
