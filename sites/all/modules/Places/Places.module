@@ -203,7 +203,7 @@
                $lng = $results_array[$h][$i]->geometry->location->lng;
                $lat = $results_array[$h][$i]->geometry->location->lat;
                $R = 6371; // Radius of the earth in km
-               $dLat = deg2rad($results_array[$h][$i + 1]->geometry->location->lat - $results_array[$h][$i]->geometry->location->lat); // deg2rad below
+               $dLat = deg2rad($results_array[$h][$i + 1]->geometry->location->lat - $results_array[$h][$i]->geometry->location->lat);
                $dLon = deg2rad($results_array[$h][$i + 1]->geometry->location->lng - $results_array[$h][$i]->geometry->location->lng);
                $a =
                  sin($dLat / 2) * sin($dLat / 2) +
@@ -221,7 +221,7 @@
                } elseif ($mode === "Driving" && $distance < 30) {
                    array_push($activities, $i);
                    array_push($distance_array, $distance);
-               } elseif ($mode === "All") {
+               } elseif ($mode === "All" && $distance < 45) {
                    array_push($activities, $i);
                    array_push($distance_array, $distance);
                }
