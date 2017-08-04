@@ -1,7 +1,7 @@
 # Grab A Bag
 
-![https://user-images.githubusercontent.com/24866377/28989321-bb16eea6-7931-11e7-8c8f-def1b7183285.PNG]
-![https://user-images.githubusercontent.com/24866377/28989348-f6f0e0e4-7931-11e7-9c5e-bb7c319eca61.PNG]
+https://user-images.githubusercontent.com/24866377/28989321-bb16eea6-7931-11e7-8c8f-def1b7183285.PNG
+https://user-images.githubusercontent.com/24866377/28989348-f6f0e0e4-7931-11e7-9c5e-bb7c319eca61.PNG
 
 ## Created by Sarah Leahy
 
