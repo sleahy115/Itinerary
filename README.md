@@ -1,17 +1,17 @@
 # Grab A Bag
 
-![ScreenShot](screenshot.png)
+![ScreenShot](Screenshot1.png)
 
 ## Created by Sarah Leahy
 
-  This website allows a user to search for flights, hotels, and attractions. It was created with Drupal 7 and uses several APIs to supply the data.
+  This website allows a user to fill out a short form and have a custom itinerary returned. It was created with Drupal 7 and uses several APIs to supply the data.
 
 ## User Story
 
 * As a user I would like to be able to search a city for types of attraction.
 * As a user I would like to see the address and rating of the attractions.  
-* As a user I would like to have an itinerary generated based on prefrence.
-* As a user I would like to check the weather at my destination. 
+* As a user I would like to have an itinerary generated based on preference.
+* As a user I would like to check the weather at my destination.
 
 ## Setup/Installation Requirements
 
