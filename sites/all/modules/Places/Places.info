@@ -1,5 +1,5 @@
-name = googlePlaces
+name = Places
 description = Travel details.
-package = googlePlaces
+package = Places
 core = 7.x
-files[] = googlePlaces.module
+files[] = Places.module

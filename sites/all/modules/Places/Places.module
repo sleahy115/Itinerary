@@ -1,10 +1,10 @@
 
 <?php
-   function googlePlaces_menu()
+   function Places_menu()
    {
        $items = array();
        $items['travel_options'] = array(
-     'title' => 'Search Attractions',
+     'title' => 'Itinerary Planner',
      'page callback' => 'drupal_get_form',
      'page arguments' => array('travel_form'),
      'access callback' => true,
@@ -28,28 +28,28 @@
    function travel_form()
    {
        $form['attraction1'] = array(
-       '#title' => 'What do you like to do for fun?',
+       '#title' => 'Enter an activity you enjoy on vacation',
        '#type' => 'textfield',
-       '#description' => t('What do you like to do for fun?'),
+       '#description' => t('For example museums, windsurfing, walking tours.'),
        '#required' => true,
      );
        $form['attraction2'] = array(
-       '#title' => 'What do you like to do for fun?',
+       '#title' => 'What type of cuisine do you like?',
        '#type' => 'textfield',
-       '#description' => t('List another activity you enjoy'),
+       '#description' => t('For example Mexican, sushi, or Italian.'),
        '#required' => true,
      );
        $form['attraction3'] = array(
-       '#title' => 'What do you like to do for fun?',
+       '#title' => 'Enter another activity you enjoy',
        '#type' => 'textfield',
-       '#description' => t('List another activity you enjoy'),
+       '#description' => t('For example hiking, bookstores, dive bars'),
        '#required' => true,
        );
        $form['city'] = array(
        '#title' => 'What city are you visting?',
        '#type' => 'textfield',
        '#required' => true,
-       '#description' => t('Please enter a city'),
+       '#description' => t('Enter a city anywhere in the world.'),
      );
        $form['active'] = array(
        '#title' => 'How active do you like to be on vacation?',
@@ -138,7 +138,7 @@
        $array_offset = 0;
        $attractions = array();
        //places key
-       $api_key = 'AIzaSyAOy8TYrUjMoRdW9-PIVi-50GnmGe_CDi8';
+       $API_KEY = 'AIzaSyAOy8TYrUjMoRdW9-PIVi-50GnmGe_CDi8';
        //   $days = $_SESSION['days'];
        $days = $_SESSION['days'];
        $counter = 0;
@@ -147,7 +147,7 @@
        //maps key
        $lat1 = 0;
        $lat2 = 0;
-       $maps_key = 'AIzaSyBU9Qh-CcMbmwS_OLHtjyLPXb4Da_xitMk';
+       $MAPS_KEY = 'AIzaSyBU9Qh-CcMbmwS_OLHtjyLPXb4Da_xitMk';
        $mode = $_SESSION['mode'];
        $number_of_activities = 0;
        $origin = '';
@@ -190,13 +190,14 @@
        //google places api call
        $googleApiPlaceUri = 'https://maps.googleapis.com/maps/api/place/textsearch/json';
        foreach ($attractions as $attraction) {
-           $api_call = preg_replace('/\s+/', '', "{$googleApiPlaceUri}?query={$attraction}+in+{$city}&key={$api_key}");
+           $api_call = preg_replace('/\s+/', '', "{$googleApiPlaceUri}?query={$attraction}+in+{$city}&key={$API_KEY}");
            $api_return_array[] = json_decode(file_get_contents($api_call));
            foreach ($api_return_array as $result) {
                $results = $result->results;
                array_push($results_array, $results);
            }
        }
+       //check distance between attractions
        for ($h=3; $h <= 6 ; $h++) {
            for ($i=0; $i < count($results_array[$h]); $i++) {
                $lng = $results_array[$h][$i]->geometry->location->lng;
