@@ -12,9 +12,13 @@
   font-variant: small-caps;
 }
 
-#navbar-collapse img {
+a.logo.navbar-btn.pull-left img {
     height: 100px;
     width: 100px;
+}
+
+.field-item img {
+    text-align: center;
 }
 
 .name a, .navbar-brand a {
